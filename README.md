@@ -1,6 +1,6 @@
 # Ejercicios 2.1.
 
-### Ejercicio 2 Apartado G
+### Ejercicio 2 Apartado F
 Llamamos a cerrar y liberar al terminar las funciones que realizan alguna acción con los recursos. Así no excedemos la memoria y la dejamos más libre
 
 ### Ejercicio 2 Apartado G
