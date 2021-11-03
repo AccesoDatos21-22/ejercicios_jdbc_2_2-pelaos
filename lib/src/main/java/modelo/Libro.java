@@ -4,7 +4,7 @@ public class Libro {
 	private int ISBN;
 	private String titulo ;				
 	private String autor;
-	private String editorial ;
+	private String editorial;
 	private int paginas ;
 	private int copias ;
 	
