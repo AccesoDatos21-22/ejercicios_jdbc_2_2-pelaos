@@ -4,7 +4,7 @@
 
     <entry key="dbms">mariadb</entry>
     <entry key="driver">mariadb</entry>
-    <entry key="database_name">mercado</entry>
+    <entry key="database_name">libreria</entry>
     <entry key="user_name">root</entry>
     <entry key="password">1234</entry>
     <entry key="server_name">localhost</entry>

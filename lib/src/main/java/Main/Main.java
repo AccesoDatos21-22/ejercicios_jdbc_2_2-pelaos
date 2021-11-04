@@ -5,23 +5,18 @@ import dao.Libros;
 import modelo.AccesoDatosException;
 
 import java.io.File;
+import java.sql.SQLException;
 
 public class Main {
 
 
-    public static void main(String[] args) throws AccesoDatosException {
-			Cafes cafes = new Cafes();
-			Libros libros = new Libros();
+    public static void main(String[] args) {
 		try {
-//			cafes.insertar("Cafetito", 150, 1.0f, 100, 1000);
-//			cafes.insertar("Cafe tacilla", 150, 2.0f, 100, 1000);
-//			cafes.verTabla();
-//			cafes.buscar("Cafe tacilla");
-//			cafes.cafesPorProveedor(150);
-			cafes.borrar("Cafe tacilla");
-			cafes.verTabla();
-//
-		} catch (AccesoDatosException e) {
+			Libros libros = new Libros();
+			System.out.println(libros.crearTablaLibro());
+
+
+		} catch (AccesoDatosException | SQLException e) {
 			e.printStackTrace();
 		}
     }
