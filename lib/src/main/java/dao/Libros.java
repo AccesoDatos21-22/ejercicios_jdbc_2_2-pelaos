@@ -150,7 +150,14 @@ public class Libros {
      * @throws AccesoDatosException
      */
 
-    public void borrar(Libro libro) throws AccesoDatosException {
+    public void borrar(Libro libro) throws AccesoDatosException, SQLException {
+
+        String searchBookString = "delete from libros where ISBN= ?";
+        if (pstmt == null)
+            pstmt = con.prepareStatement(searchBookString);
+        pstmt.setInt(1, libro.getISBN());
+        pstmt.executeQuery();
+        System.out.println("Libro borrado.");
 
 
     }
@@ -162,13 +169,38 @@ public class Libros {
      * @throws AccesoDatosException
      */
 
-    public String[] getCamposLibro() throws AccesoDatosException {
-
-        return null;
+    public String[] getCamposLibro() throws AccesoDatosException, SQLException {
+        String sqlSentece = "select * from libros;";
+        if (pstmt == null)
+            stmt = con.createStatement();
+        rs = stmt.executeQuery(sqlSentece);
+        int numeroColumnas = rs.getMetaData().getColumnCount();
+        String[] columnas = new String[numeroColumnas];
+        for (int i = 0; i < numeroColumnas; i++)
+            columnas[i] = rs.getMetaData().getColumnName(i + 1);
+        liberar();
+        return columnas;
     }
 
 
-    public void obtenerLibro(int ISBN) throws AccesoDatosException {
+    public void obtenerLibro(int ISBN) throws AccesoDatosException, SQLException {
+        String searchBookString = "select * from libros where ISBN= ?";
+        if (pstmt == null)
+            pstmt = con.prepareStatement(searchBookString);
+        pstmt.setInt(1, ISBN);
+        rs = pstmt.executeQuery();
+        while (rs.next()) {
+            int isbn = rs.getInt("isbn");
+            String titulo = rs.getString("titulo");
+            String autor = rs.getString("autor");
+            String editorial = rs.getString("editorial");
+            int paginas = rs.getInt("paginas");
+            int copias = rs.getInt("copias");
+            System.out.println("Libro> isbn:" + isbn + ", titulo:" + titulo + ", autor:" + autor + ", editorial:" + editorial + ", paginas: " + paginas + ", copias:" + copias);
+            return;
+        }
+        System.out.println("Ningun libro encontrado con isbn: " + ISBN);
+        liberar();
 
     }
 
