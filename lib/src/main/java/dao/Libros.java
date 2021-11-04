@@ -168,6 +168,20 @@ public class Libros {
 	public void obtenerLibro(int ISBN) throws AccesoDatosException {
 		
 	}
+	public boolean crearTablaLibro() throws SQLException {
+		String sqlSentence= "create table libros (\n" +
+				"   isbn integer not null,\n" +
+				"   titulo varchar(50) not null,\n" +
+				"   autor varchar(50) not null,\n" +
+				"   editorial varchar(25) not null,\n" +
+				"   paginas integer not null,\n" +
+				"   copias integer not null,\n" +
+				"   constraint isbn_pk primary key (isbn)\n" +
+				");\n";
+		stmt.execute(sqlSentence);
+
+		return true;
+	}
 
 
 

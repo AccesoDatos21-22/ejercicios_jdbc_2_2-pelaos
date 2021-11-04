@@ -52,14 +52,11 @@ public class Cafes   {
 			try {
 				con = new Utilidades().getConnection();
 			
-			} catch (IOException e) {
+			} catch (Exception e) {
 
 				System.err.println(e.getMessage());
-			
-			} catch (SQLException sqle) {
-				Utilidades.printSQLException(sqle);
-			
-			} finally {
+
+			}  finally {
 				try {
 					// Liberamos todos los recursos pase lo que pase
 					if (statement != null) {
@@ -75,8 +72,7 @@ public class Cafes   {
 
 		/**
 		 * Metodo que muestra por pantalla los datos de la tabla cafes
-		 * 
-		 * @param con
+		 *
 		 * @throws SQLException
 		 */
 		public void verTabla() throws AccesoDatosException {
@@ -277,7 +273,7 @@ public class Cafes   {
 		/**
 		 * Mótodo que busca un cafe por nombre y muestra sus datos
 		 *
-		 * @param nombre
+		 * @param provid
 		 */
 		public void cafesPorProveedor(int provid) throws AccesoDatosException {
 		
