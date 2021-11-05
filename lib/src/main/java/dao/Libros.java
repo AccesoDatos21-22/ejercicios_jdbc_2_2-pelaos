@@ -173,11 +173,12 @@ public class Libros {
         String sqlSentece = "select * from libros;";
         if (pstmt == null)
             stmt = con.createStatement();
-        rs = stmt.executeQuery(sqlSentece);
-        int numeroColumnas = rs.getMetaData().getColumnCount();
+
+        ResultSetMetaData a= stmt.executeQuery(sqlSentece).getMetaData();
+        int numeroColumnas = a.getColumnCount();
         String[] columnas = new String[numeroColumnas];
         for (int i = 0; i < numeroColumnas; i++)
-            columnas[i] = rs.getMetaData().getColumnName(i + 1);
+            columnas[i] = a.getColumnName(i + 1);
         liberar();
         return columnas;
     }
