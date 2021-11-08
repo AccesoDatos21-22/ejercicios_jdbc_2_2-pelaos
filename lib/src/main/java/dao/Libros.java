@@ -25,6 +25,16 @@ import utils.Utilidades;
  */
 
 public class Libros {
+	private static final String CREATE_LIBROS="create table create table libros (" +
+			"   isbn integer not null," +
+			"   titulo varchar(50) not null," +
+			"   autor varchar(50) not null," +
+			"   editorial varchar(25) not null," +
+			"   paginas integer not null," +
+			"   copias integer not null," +
+			"   constraint isbn_pk primary key (isbn)" +
+			");";
+	private static final String INSERT_LIBRO_QUERY="insert into libros values (?,?,?,?,?,?)";
 	private static final String SEARCH_LIBROS_EDITORIAL = "select * from libros WHERE libros.editorial= ?";
 
 	// Consultas a realizar en BD
@@ -48,6 +58,7 @@ public class Libros {
 			this.stmt = null;
 			this.rs = null;
 			this.pstmt = null;
+			stmt.executeUpdate(CREATE_LIBROS);
 		} catch (IOException e) {
 			// Error al leer propiedades
 			// En una aplicación real, escribo en el log y delego
@@ -139,8 +150,35 @@ public class Libros {
      * @throws AccesoDatosException
      */
 	public void anadirLibro(Libro libro) throws AccesoDatosException {
-		
-	
+		PreparedStatement stmt=null;
+		try {
+			stmt= con.prepareStatement(INSERT_LIBRO_QUERY);
+			stmt.setInt(1,libro.getISBN());
+			stmt.setString(2,libro.getTitulo());
+			stmt.setString(3,libro.getAutor());
+			stmt.setString(4,libro.getEditorial());
+			stmt.setInt(5,libro.getPaginas());
+			stmt.setInt(6,libro.getCopias());
+			stmt.executeUpdate();
+		} catch (SQLException sqle) {
+			// En una aplicación real, escribo en el log y delego
+			Utilidades.printSQLException(sqle);
+			throw new AccesoDatosException(
+					"Ocurrió un error al acceder a los datos");
+
+		} finally {
+			try {
+				// Liberamos todos los recursos pase lo que pase
+				if (stmt != null) {
+					stmt.close();
+				}
+
+			} catch (SQLException sqle) {
+				// En una aplicación real, escribo en el log, no delego porque
+				// es error al liberar recursos
+				Utilidades.printSQLException(sqle);
+			}
+		}
 	}
 
 	/**
@@ -150,8 +188,6 @@ public class Libros {
 	 */
 
 	public void borrar(Libro libro) throws AccesoDatosException {
-		
-		
 	}
 	
 	/**
@@ -223,6 +259,4 @@ public class Libros {
 
 
 	}
-
-}
 

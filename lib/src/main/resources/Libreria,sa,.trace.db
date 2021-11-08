@@ -1,0 +1,8 @@
+2021-11-08 10:02:24 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "LIBROS" no encontrada
+Table "LIBROS" not found; SQL statement:
+insert into libros values (?,?,?,?,?,?) [42102-199]
+2021-11-08 10:18:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "LIBROS" no encontrada
+Table "LIBROS" not found; SQL statement:
+insert into libros values (?,?,?,?,?,?) [42102-199]
