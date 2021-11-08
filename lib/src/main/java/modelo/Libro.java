@@ -70,8 +70,16 @@ public class Libro {
 	public void setCopias(int copias) {
 		this.copias = copias;
 	}
-	
-	
-	
-	
+
+	@Override
+	public String toString() {
+		return "Libro{" +
+				"ISBN=" + ISBN +
+				", titulo='" + titulo + '\'' +
+				", autor='" + autor + '\'' +
+				", editorial='" + editorial + '\'' +
+				", paginas=" + paginas +
+				", copias=" + copias +
+				'}';
+	}
 }
