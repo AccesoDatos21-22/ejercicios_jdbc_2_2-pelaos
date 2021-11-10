@@ -1,4 +1,3 @@
-
 package utils;
 
 import java.io.FileNotFoundException;
@@ -37,7 +36,7 @@ public class Utilidades {
 
     public Utilidades() throws FileNotFoundException, IOException, InvalidPropertiesFormatException {
         super();
-        this.setProperties(MARIA_PROPERTIES_FILE);
+        this.setProperties(PROPERTIES_FILE);
     }
 
     public Utilidades(String propertiesFileName)
