@@ -25,7 +25,7 @@ import utils.Utilidades;
  */
 
 public class Libros {
-	private static final String CREATE_LIBROS="create table create table libros (" +
+	private static final String CREATE_LIBROS=" create table libros (" +
 			"   isbn integer not null," +
 			"   titulo varchar(50) not null," +
 			"   autor varchar(50) not null," +
@@ -55,7 +55,7 @@ public class Libros {
 		try {
 			// Obtenemos la conexión
 			this.con = new Utilidades().getConnection();
-			this.stmt = null;
+			this.stmt = con.createStatement();
 			this.rs = null;
 			this.pstmt = null;
 			stmt.executeUpdate(CREATE_LIBROS);
@@ -122,9 +122,27 @@ public class Libros {
 	 */
 	
 	public List<Libro> verCatalogo() throws AccesoDatosException {
-	
-		return null;
+		String sqlSentence="SELECT * FROM libros;";
+		ArrayList<Libro> list = new ArrayList<Libro>();
+		try {
+			if (stmt == null)
+				stmt = con.createStatement();
 
+			rs = stmt.executeQuery(sqlSentence);
+			while(rs.next()){
+				int isbn= rs.getInt("isbn");
+				String titulo = rs.getString("titulo");
+				String autor = rs.getString("autor");
+				String editorial = rs.getString("editorial");
+				int paginas = rs.getInt("paginas");
+				int copias = rs.getInt("copias");
+				list.add(new Libro(isbn,titulo,autor,editorial,paginas,copias));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return list;
 	}
 
     /**
@@ -257,6 +275,5 @@ public class Libros {
 
 	}
 
-
-	}
+}
 

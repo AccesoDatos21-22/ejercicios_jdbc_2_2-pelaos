@@ -68,13 +68,13 @@ public class Utilidades {
 		this.serverName = this.prop.getProperty("server_name");
 		this.portNumber = Integer.parseInt(this.prop.getProperty("port_number"));
 
-		System.out.println("Set the following properties:");
-		System.out.println("dbms: " + dbms);
-		System.out.println("driver: " + driver);
-		System.out.println("dbName: " + dbName);
-		System.out.println("userName: " + userName);
-		System.out.println("serverName: " + serverName);
-		System.out.println("portNumber: " + portNumber);
+//		System.out.println("Set the following properties:");
+//		System.out.println("dbms: " + dbms);
+//		System.out.println("driver: " + driver);
+//		System.out.println("dbName: " + dbName);
+//		System.out.println("userName: " + userName);
+//		System.out.println("serverName: " + serverName);
+//		System.out.println("portNumber: " + portNumber);
 
 	}
 
