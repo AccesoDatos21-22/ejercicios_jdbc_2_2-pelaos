@@ -32,4 +32,8 @@ int columns = rsmd.getColumnCount();
         	}
 
 ```
+<<<<<<< HEAD
 Por último, devuelve el array.
+=======
+Por último, devuelve el array.
+>>>>>>> 2eaeec0d9dd9ab9533e894216be61d93fce49a41
