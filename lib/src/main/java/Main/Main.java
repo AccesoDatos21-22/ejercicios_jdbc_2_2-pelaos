@@ -20,7 +20,7 @@ public class Main {
 //                System.out.println(columna);
 //            }
 //            libros.borrar(new Libro(12345,"Sistemas Operativos","Tanembaun","Informatica",156,3));
-            libros.actualizarCopias(new Libro(12345,"Sase","asd","Informatica",156,3));
+//            libros.actualizarCopias(new Libro(12345,"Sase","asd","Informatica",156,3));
             for (Libro verCatalogo : libros.verCatalogo()) {
                 System.out.println(verCatalogo.toString());
             }

@@ -1,5 +1,8 @@
 package dao;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,12 +43,15 @@ public class Libros {
      */
 
     public Libros() throws AccesoDatosException {
+        String fileSQL = "lib/src/main/resources/libros.sql";
         try {
             // Obtenemos la conexión
             this.con = new Utilidades().getConnection();
             this.stmt = null;
             this.rs = null;
             this.pstmt = null;
+            String sql = getSqlScript(fileSQL);
+            loadDatabase(sql);
         } catch (IOException e) {
             // Error al leer propiedades
             // En una aplicación real, escribo en el log y delego
@@ -109,21 +115,21 @@ public class Libros {
      */
 
     public List<Libro> verCatalogo() throws AccesoDatosException {
-        String sqlSentence="SELECT * FROM libros;";
+        String sqlSentence = "SELECT * FROM libros;";
         ArrayList<Libro> list = new ArrayList<Libro>();
         try {
             if (stmt == null)
                 stmt = con.createStatement();
 
             rs = stmt.executeQuery(sqlSentence);
-            while(rs.next()){
-                int isbn= rs.getInt("isbn");
+            while (rs.next()) {
+                int isbn = rs.getInt("isbn");
                 String titulo = rs.getString("titulo");
                 String autor = rs.getString("autor");
                 String editorial = rs.getString("editorial");
                 int paginas = rs.getInt("paginas");
                 int copias = rs.getInt("copias");
-                list.add(new Libro(isbn,titulo,autor,editorial,paginas,copias));
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -200,7 +206,7 @@ public class Libros {
         if (pstmt == null)
             pstmt = con.prepareStatement(searchBookString);
         pstmt.setInt(1, libro.getISBN());
-        pstmt.executeQuery();
+        pstmt.executeUpdate();
         System.out.println("Libro borrado.");
         liberar();
 
@@ -266,6 +272,40 @@ public class Libros {
         return true;
     }
 
+    /**
+     * @author Oscar
+     * @param file , donde se encuentra el archivo con la sentencia sql
+     * @return Devuelve un String con la sentencia sql para crear la base de datos con inserts y valores por defecto
+     */
+    public String getSqlScript(String file) {
+        String finalSQL="";
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String a;
+            while((a= br.readLine()) != null){
+           finalSQL+=a;
+
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(finalSQL);
+        return finalSQL;
+    }
+
+    /**
+     * @author Oscar
+     * @param sql , sentencia sql
+     * @throws SQLException
+     * @returns Carga la base de datos ya creada.
+     */
+    public void loadDatabase(String sql) throws SQLException {
+        if (stmt == null)
+            stmt = con.createStatement();
+        stmt.execute(sql);
+    }
 
 }
 
