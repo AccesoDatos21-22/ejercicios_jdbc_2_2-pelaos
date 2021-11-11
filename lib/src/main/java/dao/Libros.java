@@ -15,11 +15,8 @@ import modelo.Libro;
 import utils.Utilidades;
 
 
-
 /**
- * @descrition
  * @author Carlos
- * @date 23/10/2021
  * @version 1.0
  * @license GPLv3
  */
@@ -40,79 +37,78 @@ public class Libros {
 	// Consultas a realizar en BD
 
 
-	private Connection con;
-	private Statement stmt;
-	private ResultSet rs;
-	private PreparedStatement pstmt;
+    private Connection con;
+    private Statement stmt;
+    private ResultSet rs;
+    private PreparedStatement pstmt;
 
-	/**
-	 * Constructor: inicializa conexión
-	 * 
-	 * @throws AccesoDatosException
-	 */
-	
-	public Libros() throws AccesoDatosException {
-		try {
-			// Obtenemos la conexión
-			this.con = new Utilidades().getConnection();
-			this.stmt = con.createStatement();
-			this.rs = null;
-			this.pstmt = null;
-			stmt.executeUpdate(CREATE_LIBROS);
-		} catch (IOException e) {
-			// Error al leer propiedades
-			// En una aplicación real, escribo en el log y delego
-			System.err.println(e.getMessage());
-			throw new AccesoDatosException(
-					"Ocurrió un error al acceder a los datos");
-		} catch (SQLException sqle) {
-			// En una aplicación real, escribo en el log y delego
-			// System.err.println(sqle.getMessage());
-			Utilidades.printSQLException(sqle);
-			throw new AccesoDatosException(
-					"Ocurrió un error al acceder a los datos");
-		}
-	}
+    /**
+     * Constructor: inicializa conexión
+     *
+     * @throws AccesoDatosException
+     */
 
-	
-	/**
-	 * Método para cerrar la conexión
-	 * 
-	 * @throws AccesoDatosException
-	 */
-	public void cerrar() {
-					
-			if (con != null) {
-				Utilidades.closeConnection(con);
-			}
-		
-	}
+    public Libros() throws AccesoDatosException {
+        try {
+            // Obtenemos la conexión
+            this.con = new Utilidades().getConnection();
+            this.stmt = null;
+            this.rs = null;
+            this.pstmt = null;
+        } catch (IOException e) {
+            // Error al leer propiedades
+            // En una aplicación real, escribo en el log y delego
+            System.err.println(e.getMessage());
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            // System.err.println(sqle.getMessage());
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        }
+    }
 
-	
-	/**
-	 * Método para liberar recursos
-	 * 
-	 * @throws AccesoDatosException
-	 */
-	private void liberar() {
-		try {
-			// Liberamos todos los recursos pase lo que pase
-			//Al cerrar un stmt se cierran los resultset asociados. Podíamos omitir el primer if. Lo dejamos por claridad.
-			if (rs != null) {
-				rs.close();
-			}
-			if (stmt != null) {
-				stmt.close();
-			}
-			if (pstmt != null) {
-				pstmt.close();
-			}			
-		} catch (SQLException sqle) {
-			// En una aplicación real, escribo en el log, no delego porque
-			// es error al liberar recursos
-			Utilidades.printSQLException(sqle);
-		}
-	}
+
+    /**
+     * Método para cerrar la conexión
+     *
+     * @throws AccesoDatosException
+     */
+    public void cerrar() {
+
+        if (con != null) {
+            Utilidades.closeConnection(con);
+        }
+
+    }
+
+
+    /**
+     * Método para liberar recursos
+     *
+     * @throws AccesoDatosException
+     */
+    private void liberar() {
+        try {
+            // Liberamos todos los recursos pase lo que pase
+            //Al cerrar un stmt se cierran los resultset asociados. Podíamos omitir el primer if. Lo dejamos por claridad.
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (pstmt != null) {
+                pstmt.close();
+            }
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log, no delego porque
+            // es error al liberar recursos
+            Utilidades.printSQLException(sqle);
+        }
+    }
 
 	/**
 	 * Metodo que muestra por pantalla los datos de la tabla cafes
@@ -199,11 +195,12 @@ public class Libros {
 		}
 	}
 
-	/**
-	 * Borra un libro por ISBN
-	 * @param isbn
-	 * @throws AccesoDatosException
-	 */
+    /**
+     * Borra un libro por ISBN
+     *
+     * @param isbn
+     * @throws AccesoDatosException
+     */
 
 	public void borrar(Libro libro) throws AccesoDatosException {
 	}
@@ -214,29 +211,32 @@ public class Libros {
 	 * @throws AccesoDatosException
 	 */
 
-	public String[] getCamposLibro() throws AccesoDatosException {
-       
-    return null;
-	}
+    public String[] getCamposLibro() throws AccesoDatosException {
+
+        return null;
+    }
 
 
-	public void obtenerLibro(int ISBN) throws AccesoDatosException {
-		
-	}
-	public boolean crearTablaLibro() throws SQLException {
-		String sqlSentence= "create table libros (\n" +
-				"   isbn integer not null,\n" +
-				"   titulo varchar(50) not null,\n" +
-				"   autor varchar(50) not null,\n" +
-				"   editorial varchar(25) not null,\n" +
-				"   paginas integer not null,\n" +
-				"   copias integer not null,\n" +
-				"   constraint isbn_pk primary key (isbn)\n" +
-				");\n";
-		stmt.execute(sqlSentence);
+    public void obtenerLibro(int ISBN) throws AccesoDatosException {
 
-		return true;
-	}
+    }
+
+    public boolean crearTablaLibro() throws SQLException {
+        String sqlSentence = "create table libros2 (\n" +
+                "   isbn integer not null,\n" +
+                "   titulo varchar(50) not null,\n" +
+                "   autor varchar(50) not null,\n" +
+                "   editorial varchar(25) not null,\n" +
+                "   paginas integer not null,\n" +
+                "   copias integer not null,\n" +
+                "   constraint isbn_pk primary key (isbn)\n" +
+                ");\n";
+        if (stmt == null)
+            stmt = con.createStatement();
+        stmt.execute(sqlSentence);
+        liberar();
+        return true;
+    }
 
 	public void librosporEditorial(String editorial) throws AccesoDatosException{
 		//Sentencia SQL
