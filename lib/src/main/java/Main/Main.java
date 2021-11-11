@@ -18,7 +18,6 @@ public class Main {
 			lista.forEach(System.out::println);
 			System.out.println("Libro por editorial");
 			libros.librosporEditorial("planeta");
-			Libros libros = new Libros();
 			System.out.println(libros.crearTablaLibro());
 
 
