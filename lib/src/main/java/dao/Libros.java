@@ -1,15 +1,15 @@
 package dao;
 
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
+import java.sql.ResultSetMetaData;
 import modelo.AccesoDatosException;
 import modelo.Libro;
 import utils.Utilidades;
@@ -49,12 +49,15 @@ public class Libros {
      */
 
     public Libros() throws AccesoDatosException {
+        String fileSQL = "lib/src/main/resources/libros.sql";
         try {
             // Obtenemos la conexión
             this.con = new Utilidades().getConnection();
             this.stmt = null;
             this.rs = null;
             this.pstmt = null;
+            String sql = getSqlScript(fileSQL);
+            loadDatabase(sql);
         } catch (IOException e) {
             // Error al leer propiedades
             // En una aplicación real, escribo en el log y delego
@@ -110,114 +113,151 @@ public class Libros {
         }
     }
 
-	/**
-	 * Metodo que muestra por pantalla los datos de la tabla cafes
-	 * 
-	 * @param con
-	 * @throws SQLException
-	 */
-	
-	public List<Libro> verCatalogo() throws AccesoDatosException {
-		String sqlSentence="SELECT * FROM libros;";
-		ArrayList<Libro> list = new ArrayList<Libro>();
-		try {
-			if (stmt == null)
-				stmt = con.createStatement();
+    /**
+     * Metodo que muestra por pantalla los datos de la tabla cafes
+     *
+     * @return List<Libro>
+     * @throws SQLException
+     */
 
-			rs = stmt.executeQuery(sqlSentence);
-			while(rs.next()){
-				int isbn= rs.getInt("isbn");
-				String titulo = rs.getString("titulo");
-				String autor = rs.getString("autor");
-				String editorial = rs.getString("editorial");
-				int paginas = rs.getInt("paginas");
-				int copias = rs.getInt("copias");
-				list.add(new Libro(isbn,titulo,autor,editorial,paginas,copias));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return list;
-	}
+    public List<Libro> verCatalogo() throws AccesoDatosException {
+        String sqlSentence = "SELECT * FROM libros;";
+        ArrayList<Libro> list = new ArrayList<Libro>();
+        try {
+            if (stmt == null)
+                stmt = con.createStatement();
+
+            rs = stmt.executeQuery(sqlSentence);
+            while (rs.next()) {
+                int isbn = rs.getInt("isbn");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String editorial = rs.getString("editorial");
+                int paginas = rs.getInt("paginas");
+                int copias = rs.getInt("copias");
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return list;
+
+    }
 
     /**
      * Actualiza el numero de copias para un libro
-     * @param isbn
-     * @param copias
+     *
+     * @param libro
      * @throws AccesoDatosException
      */
-	
-	public void actualizarCopias(Libro libro) throws AccesoDatosException {
-		
-	}
 
-	
+    public void actualizarCopias(Libro libro) throws AccesoDatosException {
+        String updateSql = "UPDATE libros SET titulo=?, autor=?, editorial=?, paginas=?, copias=? where isbn = ?";
+        try {
+            if (pstmt == null)
+                pstmt = con.prepareStatement(updateSql);
+            pstmt.setString(1, libro.getTitulo());
+            pstmt.setString(2, libro.getAutor());
+            pstmt.setString(3, libro.getEditorial());
+            pstmt.setInt(4, libro.getPaginas());
+            pstmt.setInt(5, libro.getCopias());
+            pstmt.setInt(6, libro.getISBN());
+            rs = pstmt.executeQuery();
+            System.out.println("Libro actualizado correctamente");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        liberar();
+    }
+
+
     /**
      * Añade un nuevo libro a la BD
-     * @param isbn
-     * @param titulo
-     * @param autor
-     * @param editorial
-     * @param paginas
-     * @param copias
+     *
+     * @param libro
      * @throws AccesoDatosException
      */
-	public void anadirLibro(Libro libro) throws AccesoDatosException {
-		PreparedStatement stmt=null;
-		try {
-			stmt= con.prepareStatement(INSERT_LIBRO_QUERY);
-			stmt.setInt(1,libro.getISBN());
-			stmt.setString(2,libro.getTitulo());
-			stmt.setString(3,libro.getAutor());
-			stmt.setString(4,libro.getEditorial());
-			stmt.setInt(5,libro.getPaginas());
-			stmt.setInt(6,libro.getCopias());
-			stmt.executeUpdate();
-		} catch (SQLException sqle) {
-			// En una aplicación real, escribo en el log y delego
-			Utilidades.printSQLException(sqle);
-			throw new AccesoDatosException(
-					"Ocurrió un error al acceder a los datos");
+    public void anadirLibro(Libro libro) throws AccesoDatosException {
+        String insertString = "insert into libros (isbn,titulo,autor,editorial,paginas,copias) values(?,?,?,?,?,?);";
+        try {
+            if (pstmt == null)
+                pstmt = con.prepareStatement(insertString);
+            pstmt.setInt(1, libro.getISBN());
+            pstmt.setString(2, libro.getTitulo());
+            pstmt.setString(3, libro.getAutor());
+            pstmt.setString(4, libro.getEditorial());
+            pstmt.setInt(5, libro.getPaginas());
+            pstmt.setInt(6, libro.getCopias());
+            rs = pstmt.executeQuery();
+            System.out.println("Libro added correctamente");
+        } catch (SQLException e) {
+            System.out.println(e.getCause());
+        }
+        liberar();
 
-		} finally {
-			try {
-				// Liberamos todos los recursos pase lo que pase
-				if (stmt != null) {
-					stmt.close();
-				}
 
-			} catch (SQLException sqle) {
-				// En una aplicación real, escribo en el log, no delego porque
-				// es error al liberar recursos
-				Utilidades.printSQLException(sqle);
-			}
-		}
-	}
+    }
 
     /**
      * Borra un libro por ISBN
      *
-     * @param isbn
+     * @param libro
      * @throws AccesoDatosException
      */
 
-	public void borrar(Libro libro) throws AccesoDatosException {
-	}
-	
-	/**
-	 * Devulve los nombres de los campos de BD
-	 * @return
-	 * @throws AccesoDatosException
-	 */
+    public void borrar(Libro libro) throws AccesoDatosException, SQLException {
 
-    public String[] getCamposLibro() throws AccesoDatosException {
+        String searchBookString = "delete from libros where ISBN= ?";
+        if (pstmt == null)
+            pstmt = con.prepareStatement(searchBookString);
+        pstmt.setInt(1, libro.getISBN());
+        pstmt.executeUpdate();
+        System.out.println("Libro borrado.");
+        liberar();
 
-        return null;
+    }
+
+    /**
+     * Devulve los nombres de los campos de BD
+     *
+     * @return
+     * @throws AccesoDatosException
+     */
+
+    public String[] getCamposLibro() throws AccesoDatosException, SQLException {
+        String sqlSentece = "select * from libros;";
+        if (pstmt == null)
+            stmt = con.createStatement();
+
+        ResultSetMetaData a = stmt.executeQuery(sqlSentece).getMetaData();
+        int numeroColumnas = a.getColumnCount();
+        String[] columnas = new String[numeroColumnas];
+        for (int i = 0; i < numeroColumnas; i++)
+            columnas[i] = a.getColumnName(i + 1);
+        liberar();
+        return columnas;
     }
 
 
-    public void obtenerLibro(int ISBN) throws AccesoDatosException {
+    public void obtenerLibro(int ISBN) throws AccesoDatosException, SQLException {
+        String searchBookString = "select * from libros where ISBN= ?";
+        if (pstmt == null)
+            pstmt = con.prepareStatement(searchBookString);
+        pstmt.setInt(1, ISBN);
+        rs = pstmt.executeQuery();
+        while (rs.next()) {
+            int isbn = rs.getInt("isbn");
+            String titulo = rs.getString("titulo");
+            String autor = rs.getString("autor");
+            String editorial = rs.getString("editorial");
+            int paginas = rs.getInt("paginas");
+            int copias = rs.getInt("copias");
+            System.out.println("Libro> isbn:" + isbn + ", titulo:" + titulo + ", autor:" + autor + ", editorial:" + editorial + ", paginas: " + paginas + ", copias:" + copias);
+            return;
+        }
+        System.out.println("Ningun libro encontrado con isbn: " + ISBN);
+        liberar();
 
     }
 
@@ -238,6 +278,40 @@ public class Libros {
         return true;
     }
 
+    /**
+     * @author Oscar
+     * @param file , donde se encuentra el archivo con la sentencia sql
+     * @return Devuelve un String con la sentencia sql para crear la base de datos con inserts y valores por defecto
+     */
+    public String getSqlScript(String file) {
+        String finalSQL="";
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String a;
+            while((a= br.readLine()) != null){
+           finalSQL+=a;
+
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(finalSQL);
+        return finalSQL;
+    }
+
+    /**
+     * @author Oscar
+     * @param sql , sentencia sql
+     * @throws SQLException
+     * @returns Carga la base de datos ya creada.
+     */
+    public void loadDatabase(String sql) throws SQLException {
+        if (stmt == null)
+            stmt = con.createStatement();
+        stmt.execute(sql);
+    }
 	public void librosporEditorial(String editorial) throws AccesoDatosException{
 		//Sentencia SQL
 		PreparedStatement stmnt=null;

@@ -11,7 +11,7 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 /**
- * 
+ *
  * @description Clase que establece una conexión a BD utilizando la clase
  *              DriverManager. lee los datos de u archivo de propiedades
  * @author Carlos
@@ -36,10 +36,10 @@ public class Utilidades {
     private static final String PROPERTIES_FILE = System.getProperty("user.dir") + "/lib/src/main/resources/db-properties/h2-properties.xml";
     private static final String MARIA_PROPERTIES_FILE = System.getProperty("user.dir") + "/lib/src/main/resources/db-properties/mariadb-properties.xml";
 
-	public Utilidades() throws FileNotFoundException, IOException, InvalidPropertiesFormatException {
-		super();
-		this.setProperties(PROPERTIES_FILE);
-	}
+    public Utilidades() throws FileNotFoundException, IOException, InvalidPropertiesFormatException {
+        super();
+        this.setProperties(PROPERTIES_FILE);
+    }
 
 	public Utilidades(String propertiesFileName)
 			throws FileNotFoundException, IOException, InvalidPropertiesFormatException {
@@ -78,7 +78,7 @@ public class Utilidades {
 
 	/**
 	 * Conexion a Base de Datos
-	 * 
+	 *
 	 * @return
 	 * @throws SQLException
 	 */
@@ -89,23 +89,13 @@ public class Utilidades {
 		connectionProps.put("user", this.userName);
 		connectionProps.put("password", this.password);
 
-		if (this.dbms.equals("mariadb")) {
-			/* Solicito a DriverManager una conexión con la base de datos */
-			/*
-			 * Para identificar el controldador a usar se le proporciona una URL, si no lo
-			 * encuentra lanza SQLException
-			 */
-			/* formato de URL: jdbc:[host][:port]/[database] */
-			/*
-			 * La URL varia según el gestor de BD, jdbc:mysql://127.0.0.1:3306/libros,
-			 * jdbc:oracle:thin:@192.168.239.142:1521:libros
-			 */
-			conn = DriverManager.getConnection(
-					"jdbc:" + this.dbms + "://" + this.serverName + ":" + this.portNumber + "/" + this.dbName,
-					connectionProps);
-		} else if (this.dbms.equals("derby")) {
-			conn = DriverManager.getConnection("jdbc:" + this.dbms + ":" + this.dbName + ";create=true",
-					connectionProps);
+
+        if (this.dbms.equals("mariadb")) {
+            conn = DriverManager.getConnection(
+                    "jdbc:" + this.dbms + "://" + this.serverName + ":" + this.portNumber + "/" + this.dbName+"?user="+this.userName+"&password="+this.password);
+        } else if (this.dbms.equals("derby")) {
+            conn = DriverManager.getConnection("jdbc:" + this.dbms + ":" + this.dbName + ";create=true",
+                    connectionProps);
 
         } else if (this.dbms.equals("sqlite")) {
             conn = DriverManager
