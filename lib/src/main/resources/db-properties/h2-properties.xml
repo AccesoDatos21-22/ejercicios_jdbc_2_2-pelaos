@@ -2,9 +2,9 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<entry key="dbms">h2</entry>
+  <entry key="dbms">h2</entry>
   <entry key="driver">org.h2.Driver</entry>
-  <entry key="database_name">mem:test</entry>
+  <entry key="database_name">mem:Libreria</entry>
   <entry key="user_name">sa</entry>
   <entry key="password"></entry>
   <entry key="server_name">localhost</entry>

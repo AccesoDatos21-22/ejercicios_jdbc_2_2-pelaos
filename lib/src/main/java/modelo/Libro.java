@@ -4,7 +4,7 @@ public class Libro {
 	private int ISBN;
 	private String titulo ;				
 	private String autor;
-	private String editorial ;
+	private String editorial;
 	private int paginas ;
 	private int copias ;
 	
@@ -70,8 +70,16 @@ public class Libro {
 	public void setCopias(int copias) {
 		this.copias = copias;
 	}
-	
-	
-	
-	
+
+	@Override
+	public String toString() {
+		return "Libro{" +
+				"ISBN=" + ISBN +
+				", titulo='" + titulo + '\'' +
+				", autor='" + autor + '\'' +
+				", editorial='" + editorial + '\'' +
+				", paginas=" + paginas +
+				", copias=" + copias +
+				'}';
+	}
 }
