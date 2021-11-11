@@ -1,15 +1,20 @@
 package dao;
 
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.sql.ResultSetMetaData;
+
 import modelo.AccesoDatosException;
 import modelo.Libro;
 import utils.Utilidades;
@@ -22,19 +27,19 @@ import utils.Utilidades;
  */
 
 public class Libros {
-	private static final String CREATE_LIBROS=" create table libros (" +
-			"   isbn integer not null," +
-			"   titulo varchar(50) not null," +
-			"   autor varchar(50) not null," +
-			"   editorial varchar(25) not null," +
-			"   paginas integer not null," +
-			"   copias integer not null," +
-			"   constraint isbn_pk primary key (isbn)" +
-			");";
-	private static final String INSERT_LIBRO_QUERY="insert into libros values (?,?,?,?,?,?)";
-	private static final String SEARCH_LIBROS_EDITORIAL = "select * from libros WHERE libros.editorial= ?";
+    private static final String CREATE_LIBROS = " create table libros (" +
+            "   isbn integer not null," +
+            "   titulo varchar(50) not null," +
+            "   autor varchar(50) not null," +
+            "   editorial varchar(25) not null," +
+            "   paginas integer not null," +
+            "   copias integer not null," +
+            "   constraint isbn_pk primary key (isbn)" +
+            ");";
+    private static final String INSERT_LIBRO_QUERY = "insert into libros values (?,?,?,?,?,?)";
+    private static final String SEARCH_LIBROS_EDITORIAL = "select * from libros WHERE libros.editorial= ?";
 
-	// Consultas a realizar en BD
+    // Consultas a realizar en BD
 
 
     private Connection con;
@@ -279,16 +284,16 @@ public class Libros {
     }
 
     /**
-     * @author Oscar
      * @param file , donde se encuentra el archivo con la sentencia sql
      * @return Devuelve un String con la sentencia sql para crear la base de datos con inserts y valores por defecto
+     * @author Oscar
      */
     public String getSqlScript(String file) {
-        String finalSQL="";
+        String finalSQL = "";
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String a;
-            while((a= br.readLine()) != null){
-           finalSQL+=a;
+            while ((a = br.readLine()) != null) {
+                finalSQL += a;
 
             }
 
@@ -302,9 +307,9 @@ public class Libros {
     }
 
     /**
-     * @author Oscar
      * @param sql , sentencia sql
      * @throws SQLException
+     * @author Oscar
      * @returns Carga la base de datos ya creada.
      */
     public void loadDatabase(String sql) throws SQLException {
@@ -312,56 +317,57 @@ public class Libros {
             stmt = con.createStatement();
         stmt.execute(sql);
     }
-	public void librosporEditorial(String editorial) throws AccesoDatosException{
-		//Sentencia SQL
-		PreparedStatement stmnt=null;
-		//Resultados a obtener de la sentencia SQL
-		ResultSet rs=null;
-		try {
-			con=new Utilidades().getConnection();
-			//Creacion de la sentencia
-			stmnt=con.prepareStatement(SEARCH_LIBROS_EDITORIAL);
-			stmnt.setString(1,editorial);
-			//Ejecución de la consulta y obtencion de resultados en un ResultSet
-			rs=stmnt.executeQuery();
-			while (rs.next()){
-				int isbn=rs.getInt("isbn");
-				String titulo=rs.getString("titulo");
-				String autor=rs.getString("autor");
-				String editor=rs.getString("editorial");
-				int paginas=rs.getInt("paginas");
-				int copias=rs.getInt("copias");
-				System.out.println(isbn+", "+titulo+", "+autor+", "+editor+", "+paginas+", "+copias);
-			}
-		} catch (IOException e) {
-			// Error al leer propiedades
-			// En una aplicación real, escribo en el log y delego
-			System.err.println(e.getMessage());
-			throw new AccesoDatosException(
-					"Ocurrió un error al acceder a los datos");
-		} catch (SQLException sqle) {
-			// En una aplicación real, escribo en el log y delego
-			Utilidades.printSQLException(sqle);
-			throw new AccesoDatosException(
-					"Ocurrió un error al acceder a los datos");
-		} finally {
-			try {
-				// Liberamos todos los recursos pase lo que pase
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
 
-			} catch (SQLException sqle) {
-				// En una aplicación real, escribo en el log, no delego porque
-				// es error al liberar recursos
-				Utilidades.printSQLException(sqle);
-			}
-		}
+    public void librosporEditorial(String editorial) throws AccesoDatosException {
+        //Sentencia SQL
+        PreparedStatement stmnt = null;
+        //Resultados a obtener de la sentencia SQL
+        ResultSet rs = null;
+        try {
+            con = new Utilidades().getConnection();
+            //Creacion de la sentencia
+            stmnt = con.prepareStatement(SEARCH_LIBROS_EDITORIAL);
+            stmnt.setString(1, editorial);
+            //Ejecución de la consulta y obtencion de resultados en un ResultSet
+            rs = stmnt.executeQuery();
+            while (rs.next()) {
+                int isbn = rs.getInt("isbn");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String editor = rs.getString("editorial");
+                int paginas = rs.getInt("paginas");
+                int copias = rs.getInt("copias");
+                System.out.println(isbn + ", " + titulo + ", " + autor + ", " + editor + ", " + paginas + ", " + copias);
+            }
+        } catch (IOException e) {
+            // Error al leer propiedades
+            // En una aplicación real, escribo en el log y delego
+            System.err.println(e.getMessage());
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } finally {
+            try {
+                // Liberamos todos los recursos pase lo que pase
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
 
-	}
+            } catch (SQLException sqle) {
+                // En una aplicación real, escribo en el log, no delego porque
+                // es error al liberar recursos
+                Utilidades.printSQLException(sqle);
+            }
+        }
+
+    }
 
 }
 
