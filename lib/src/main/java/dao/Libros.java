@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 
 import java.sql.ResultSetMetaData;
@@ -104,12 +105,15 @@ public class Libros {
             //Al cerrar un stmt se cierran los resultset asociados. Podíamos omitir el primer if. Lo dejamos por claridad.
             if (rs != null) {
                 rs.close();
+                rs = null;
             }
             if (stmt != null) {
                 stmt.close();
+                stmt = null;
             }
             if (pstmt != null) {
                 pstmt.close();
+                pstmt = null;
             }
         } catch (SQLException sqle) {
             // En una aplicación real, escribo en el log, no delego porque
@@ -129,9 +133,7 @@ public class Libros {
         String sqlSentence = "SELECT * FROM libros;";
         ArrayList<Libro> list = new ArrayList<Libro>();
         try {
-            if (stmt == null)
-                stmt = con.createStatement();
-
+            stmt = con.createStatement();
             rs = stmt.executeQuery(sqlSentence);
             while (rs.next()) {
                 int isbn = rs.getInt("isbn");
@@ -145,6 +147,7 @@ public class Libros {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+
         }
         return list;
 
@@ -276,8 +279,8 @@ public class Libros {
                 "   copias integer not null,\n" +
                 "   constraint isbn_pk primary key (isbn)\n" +
                 ");\n";
-        if (stmt == null)
-            stmt = con.createStatement();
+
+        stmt = con.createStatement();
         stmt.execute(sqlSentence);
         liberar();
         return true;
