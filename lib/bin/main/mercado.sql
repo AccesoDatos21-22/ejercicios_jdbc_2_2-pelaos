@@ -1,10 +1,3 @@
-drop database if exists mercado;
-
-create database mercado;
-
-use mercado; 
-
-drop table if exists proveedores;
 
 create table proveedores (PROV_ID integer NOT NULL, PROV_NOMBRE varchar(40) NOT NULL, CALLE varchar(40) NOT NULL, CIUDAD varchar(20) NOT NULL, PAIS varchar(2) NOT NULL, CP varchar(5), PRIMARY KEY (PROV_ID));
 

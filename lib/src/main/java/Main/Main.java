@@ -1,13 +1,15 @@
 package Main;
 
+import dao.Cafes;
 import dao.Libros;
 import modelo.AccesoDatosException;
+import modelo.Cafe;
 import modelo.Libro;
 import java.util.List;
 import java.sql.SQLException;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws AccesoDatosException {
 
 		try {
 			Libros libros = new Libros();
@@ -33,5 +35,10 @@ public class Main {
 		} catch (AccesoDatosException | SQLException e) {
 			e.printStackTrace();
 		}
+
+		Cafes cafes = new Cafes();
+		cafes.transferencia("Colombian","Espresso");
+		cafes.buscar("Colombian");
+		cafes.buscar("Espresso");
 	}
 }
