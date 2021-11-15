@@ -39,6 +39,7 @@ public class Libros {
             ");";
     private static final String INSERT_LIBRO_QUERY = "insert into libros values (?,?,?,?,?,?)";
     private static final String SEARCH_LIBROS_EDITORIAL = "select * from libros WHERE libros.editorial= ?";
+    private static final String MOSTRAR_LIBROS = "SELECT * FROM libros;";
 
     // Consultas a realizar en BD
 
@@ -197,10 +198,10 @@ public class Libros {
             pstmt.setString(4, libro.getEditorial());
             pstmt.setInt(5, libro.getPaginas());
             pstmt.setInt(6, libro.getCopias());
-            rs = pstmt.executeQuery();
+            pstmt.executeUpdate();
             System.out.println("Libro added correctamente");
         } catch (SQLException e) {
-            System.out.println(e.getCause());
+            e.printStackTrace();
         }
         liberar();
 
@@ -305,7 +306,7 @@ public class Libros {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(finalSQL);
+//        System.out.println(finalSQL);
         return finalSQL;
     }
 
@@ -371,6 +372,27 @@ public class Libros {
         }
 
     }
-
+    public void verCatalogo(int[] filas) throws AccesoDatosException{
+        ArrayList<Libro> list = new ArrayList<>();
+        try {
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            rs = stmt.executeQuery(MOSTRAR_LIBROS);
+            while (rs.next()) {
+                int isbn = rs.getInt("isbn");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String editorial = rs.getString("editorial");
+                int paginas = rs.getInt("paginas");
+                int copias = rs.getInt("copias");
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias));
+            }
+            for (int fila : filas) {
+                System.out.println(list.get(fila-1).toString());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        liberar();
+    }
 }
 
