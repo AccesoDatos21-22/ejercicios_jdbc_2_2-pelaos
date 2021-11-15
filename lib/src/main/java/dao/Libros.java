@@ -372,5 +372,59 @@ public class Libros {
 
     }
 
+    public void actualizaPrecio(int isbn, float precio, int paginas) {
+        int paginasActuales = -1;
+        float precioFinal;
+        String sqlSelect = "select paginas from libros where ISBN =" + isbn;
+        String sqlPreparedStmt = "update libros set paginas=?, precio=? where isbn = " + isbn;
+        try {
+            //Deshabilitamos el autocommit
+            con.setAutoCommit(false);
+
+            pstmt = con.prepareStatement(sqlPreparedStmt,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            //Primero, buscaremos si el libro existe en nuestro catálogo y actulizamos los valores
+            while (rs.next()) {
+                //Si paginas es -1, significa que no ha habido ningún resultado.
+                if ((paginasActuales = rs.getInt("paginas")) == -1)
+                    throw new SQLException();
+
+                //Cambiamos el número de páginas y calculamos el precio
+                paginas += paginasActuales;
+                precioFinal = paginasActuales * precio;
+                //Actualizamos nuestros datos en la bdd
+                rs.updateInt("paginas", paginas);
+                rs.updateFloat("precio", precioFinal);
+                rs.updateRow();
+            }
+
+            //Commit para guardar cambios.
+            con.commit();
+        } catch (SQLException e) {
+            //Si se produce un fallo, hacemos un rollback
+            try {
+                System.err.println("Error al actualizar precio... Haciendo rollback");
+                con.rollback();
+                e.printStackTrace();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+
+    /**  Añade un nuevo método a la clase libros que reciba un isbn,
+     *  un float que indica el precio por página y  un número de páginas.
+
+     public void actualizaPrecio(int isbn, float precio, int paginas) throws AccesoDatosException;
+
+     este método realizará lo siguiente:
+
+
+     a.       Sumará el número de páginas a las páginas actuales que ya tiene el libro
+     b.      Calcula el precio multiplicando el total de páginas por el precio por página
+     c.       Actualiza el precio del libro
+     d.      Las 2 operaciones de actualización ser una transacción
+     e.       Resuélvelo utilizando ResultSet.CONCUR_UPDATABLE
+     **/
 }
 

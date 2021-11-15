@@ -11,6 +11,7 @@ public class Main {
 
 		try {
 			Libros libros = new Libros();
+			libros.actualizaPrecio(1,233.2f, 34);
 			libros.anadirLibro(new Libro(1, "1001 noches", "alibaba", "planeta", 200, 1000000));
 			List lista = libros.verCatalogo();
 			lista.forEach(System.out::println);
