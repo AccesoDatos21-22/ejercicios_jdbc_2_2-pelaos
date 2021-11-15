@@ -411,20 +411,5 @@ public class Libros {
         System.out.println("Libro actualizado correctamente ");
     }
 
-
-    /**  Añade un nuevo método a la clase libros que reciba un isbn,
-     *  un float que indica el precio por página y  un número de páginas.
-
-     public void actualizaPrecio(int isbn, float precio, int paginas) throws AccesoDatosException;
-
-     este método realizará lo siguiente:
-
-
-     a.       Sumará el número de páginas a las páginas actuales que ya tiene el libro
-     b.      Calcula el precio multiplicando el total de páginas por el precio por página
-     c.       Actualiza el precio del libro
-     d.      Las 2 operaciones de actualización ser una transacción
-     e.       Resuélvelo utilizando ResultSet.CONCUR_UPDATABLE
-     **/
 }
 
