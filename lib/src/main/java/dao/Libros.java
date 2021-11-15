@@ -305,7 +305,6 @@ public class Libros {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(finalSQL);
         return finalSQL;
     }
 
@@ -376,12 +375,12 @@ public class Libros {
         int paginasActuales = -1;
         float precioFinal;
         String sqlSelect = "select paginas from libros where ISBN =" + isbn;
-        String sqlPreparedStmt = "update libros set paginas=?, precio=? where isbn = " + isbn;
         try {
             //Deshabilitamos el autocommit
             con.setAutoCommit(false);
 
-            pstmt = con.prepareStatement(sqlPreparedStmt,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            pstmt = con.prepareStatement(sqlSelect,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            rs = pstmt.executeQuery();
             //Primero, buscaremos si el libro existe en nuestro catálogo y actulizamos los valores
             while (rs.next()) {
                 //Si paginas es -1, significa que no ha habido ningún resultado.
@@ -409,6 +408,7 @@ public class Libros {
                 ex.printStackTrace();
             }
         }
+        System.out.println("Libro actualizado correctamente ");
     }
 
 
