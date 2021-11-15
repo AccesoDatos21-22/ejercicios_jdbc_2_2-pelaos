@@ -305,7 +305,6 @@ public class Libros {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(finalSQL);
         return finalSQL;
     }
 
