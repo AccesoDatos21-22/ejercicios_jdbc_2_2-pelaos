@@ -43,6 +43,7 @@ public class Libros {
     private static final String SELECT_LIBROS_QUERY = "SELECT * FROM libros;";
     private static final String SEARCH_LIBROS_EDITORIAL = "select * from libros WHERE libros.editorial= ?";
     private static final String MOSTRAR_LIBROS = "SELECT * FROM libros;";
+    private static final String BUSCAR_CAFE="select * from libros WHERE libros.isbn= ?";
 
     // Consultas a realizar en BD
 
@@ -372,6 +373,36 @@ public class Libros {
             }
         }
 
+    }
+    public void actualizaPrecio(int isbn1, int isbn2, float precio) throws AccesoDatosException{
+        int paginas1,paginas2;
+        try {
+            con.setAutoCommit(false);
+            pstmt=con.prepareStatement(BUSCAR_CAFE,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1,isbn1);
+            rs=pstmt.executeQuery();
+            while (rs.next()){
+                paginas1=rs.getInt("paginas");
+                paginas1= (int) (paginas1*precio);
+                rs.updateInt("paginas", paginas1);
+                rs.updateRow();
+                System.out.println("Precio del libro '"+isbn1+"': "+paginas1);
+            }
+            pstmt=null;
+            rs=null;
+            pstmt=con.prepareStatement(BUSCAR_CAFE,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1,isbn2);
+            rs=pstmt.executeQuery();
+            while (rs.next()){
+                paginas2=rs.getInt("paginas");
+                paginas2= (int) (paginas2*precio);
+                rs.updateInt("paginas",paginas2);
+                rs.updateRow();
+                System.out.println("Precio del libro '"+isbn1+"': "+paginas2);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     public void verCatalogoInverso() throws AccesoDatosException{
         ArrayList<Libro> list=new ArrayList<>();
