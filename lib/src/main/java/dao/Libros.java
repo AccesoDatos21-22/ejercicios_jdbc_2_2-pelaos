@@ -235,7 +235,7 @@ public class Libros {
     /**
      * Devulve los nombres de los campos de BD
      *
-     * @return
+     * @return lista campos de la tabla Libro
      * @throws AccesoDatosException
      */
 
@@ -388,7 +388,8 @@ public class Libros {
                 String editorial = rs.getString("editorial");
                 int paginas = rs.getInt("paginas");
                 int copias = rs.getInt("copias");
-                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias));
+                float precio = rs.getFloat("precio");
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias,precio));
             }
             //Como nuestro metodo es void, mostraremos por pantalla el resultado dentro del metodo en vez del main
             list.forEach(System.out::println);
@@ -408,7 +409,8 @@ public class Libros {
                 String editorial = rs.getString("editorial");
                 int paginas = rs.getInt("paginas");
                 int copias = rs.getInt("copias");
-                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias));
+                float precio = rs.getFloat("precio");
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias,precio));
             }
             for (int fila : filas) {
                 System.out.println(list.get(fila-1).toString());

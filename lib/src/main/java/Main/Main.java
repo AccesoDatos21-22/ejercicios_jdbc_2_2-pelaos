@@ -13,9 +13,9 @@ public class Main {
         Libros libros = null;
         try {
             libros = new Libros();
-            libros.anadirLibro(new Libro(1, "1001 noches", "alibaba", "planeta", 200, 1000000));
-            libros.anadirLibro(new Libro(2, "2021 noches", "aliexpress", "luna", 400, 1000000));
-            libros.anadirLibro(new Libro(3, "10 dias", "amazon", "asteroide", 600, 1000000));
+            libros.anadirLibro(new Libro(1, "1001 noches", "alibaba", "planeta", 200, 1000000,0f));
+            libros.anadirLibro(new Libro(2, "2021 noches", "aliexpress", "luna", 400, 1000000,23.0f));
+            libros.anadirLibro(new Libro(3, "10 dias", "amazon", "asteroide", 600, 1000000,24.55f));
             List lista = libros.verCatalogo();
             lista.forEach(System.out::println);
 
@@ -40,7 +40,7 @@ public class Main {
 				System.out.println(verCatalogo.toString());
 			}
 
-        } catch (AccesoDatosException e) {
+        } catch (AccesoDatosException | SQLException e) {
             e.printStackTrace();
         }
     }
