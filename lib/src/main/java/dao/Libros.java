@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 
@@ -35,9 +36,11 @@ public class Libros {
             "   editorial varchar(25) not null," +
             "   paginas integer not null," +
             "   copias integer not null," +
+            "   precio real not null," +
             "   constraint isbn_pk primary key (isbn)" +
             ");";
     private static final String INSERT_LIBRO_QUERY = "insert into libros values (?,?,?,?,?,?)";
+    private static final String SELECT_LIBROS_QUERY = "SELECT * FROM libros;";
     private static final String SEARCH_LIBROS_EDITORIAL = "select * from libros WHERE libros.editorial= ?";
     private static final String MOSTRAR_LIBROS = "SELECT * FROM libros;";
 
@@ -131,6 +134,7 @@ public class Libros {
      */
 
     public List<Libro> verCatalogo() throws AccesoDatosException {
+        String sqlSentence = "SELECT * FROM libros;";
         ArrayList<Libro> list = new ArrayList<Libro>();
         try {
             stmt = con.createStatement();
@@ -142,7 +146,8 @@ public class Libros {
                 String editorial = rs.getString("editorial");
                 int paginas = rs.getInt("paginas");
                 int copias = rs.getInt("copias");
-                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias));
+                double precio = rs.getDouble("precio");
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias, precio));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -161,17 +166,18 @@ public class Libros {
      */
 
     public void actualizarCopias(Libro libro) throws AccesoDatosException {
-        String updateSql = "UPDATE libros SET titulo=?, autor=?, editorial=?, paginas=?, copias=? where isbn = ?";
+        String updateSql = "UPDATE libros SET titulo=?, autor=?, editorial=?, paginas=?, copias=?, precio=? where isbn = ?";
         try {
-            if (pstmt == null)
-                pstmt = con.prepareStatement(updateSql);
+
+            pstmt = con.prepareStatement(updateSql);
             pstmt.setString(1, libro.getTitulo());
             pstmt.setString(2, libro.getAutor());
             pstmt.setString(3, libro.getEditorial());
             pstmt.setInt(4, libro.getPaginas());
             pstmt.setInt(5, libro.getCopias());
-            pstmt.setInt(6, libro.getISBN());
-            rs = pstmt.executeQuery();
+            pstmt.setDouble(6, libro.getPrecio());
+            pstmt.setInt(7, libro.getISBN());
+            pstmt.executeUpdate();
             System.out.println("Libro actualizado correctamente");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -235,8 +241,8 @@ public class Libros {
 
     public String[] getCamposLibro() throws AccesoDatosException, SQLException {
         String sqlSentece = "select * from libros;";
-        if (pstmt == null)
-            stmt = con.createStatement();
+
+        stmt = con.createStatement();
 
         ResultSetMetaData a = stmt.executeQuery(sqlSentece).getMetaData();
         int numeroColumnas = a.getColumnCount();
@@ -255,13 +261,13 @@ public class Libros {
         pstmt.setInt(1, ISBN);
         rs = pstmt.executeQuery();
         while (rs.next()) {
-            int isbn = rs.getInt("isbn");
             String titulo = rs.getString("titulo");
             String autor = rs.getString("autor");
             String editorial = rs.getString("editorial");
             int paginas = rs.getInt("paginas");
             int copias = rs.getInt("copias");
-            System.out.println("Libro> isbn:" + isbn + ", titulo:" + titulo + ", autor:" + autor + ", editorial:" + editorial + ", paginas: " + paginas + ", copias:" + copias);
+            Double precio = rs.getDouble("precio");
+            System.out.println("Libro> isbn:" + ISBN + ", titulo:" + titulo + ", autor:" + autor + ", editorial:" + editorial + ", paginas: " + paginas + ", copias:" + copias + ",precio: " + precio);
             return;
         }
         System.out.println("Ningun libro encontrado con isbn: " + ISBN);
@@ -277,6 +283,7 @@ public class Libros {
                 "   editorial varchar(25) not null,\n" +
                 "   paginas integer not null,\n" +
                 "   copias integer not null,\n" +
+                "   precio real not null,\n" +
                 "   constraint isbn_pk primary key (isbn)\n" +
                 ");\n";
 
@@ -322,31 +329,25 @@ public class Libros {
 
     public void librosporEditorial(String editorial) throws AccesoDatosException {
         //Sentencia SQL
-        PreparedStatement stmnt = null;
+        pstmt = null;
         //Resultados a obtener de la sentencia SQL
-        ResultSet rs = null;
+        rs = null;
         try {
-            con = new Utilidades().getConnection();
             //Creacion de la sentencia
-            stmnt = con.prepareStatement(SEARCH_LIBROS_EDITORIAL);
-            stmnt.setString(1, editorial);
+            pstmt = con.prepareStatement(SEARCH_LIBROS_EDITORIAL);
+            pstmt.setString(1, editorial);
             //Ejecución de la consulta y obtencion de resultados en un ResultSet
-            rs = stmnt.executeQuery();
+            rs = pstmt.executeQuery();
             while (rs.next()) {
                 int isbn = rs.getInt("isbn");
                 String titulo = rs.getString("titulo");
                 String autor = rs.getString("autor");
-                String editor = rs.getString("editorial");
                 int paginas = rs.getInt("paginas");
                 int copias = rs.getInt("copias");
-                System.out.println(isbn + ", " + titulo + ", " + autor + ", " + editor + ", " + paginas + ", " + copias);
+                Double precio = rs.getDouble("precio");
+                System.out.println(isbn + ", " + titulo + ", " + autor + ", " + editorial + ", " + paginas + ", " + copias + ", " + precio);
             }
-        } catch (IOException e) {
-            // Error al leer propiedades
-            // En una aplicación real, escribo en el log y delego
-            System.err.println(e.getMessage());
-            throw new AccesoDatosException(
-                    "Ocurrió un error al acceder a los datos");
+
         } catch (SQLException sqle) {
             // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
@@ -357,9 +358,11 @@ public class Libros {
                 // Liberamos todos los recursos pase lo que pase
                 if (rs != null) {
                     rs.close();
+                    rs = null;
                 }
                 if (stmt != null) {
                     stmt.close();
+                    stmt = null;
                 }
 
             } catch (SQLException sqle) {
@@ -415,5 +418,66 @@ public class Libros {
         }
         liberar();
     }
+
+    public void actualizarPrecio(double precio) {
+        Libro libro = null;
+        try {
+            stmt = con.createStatement();
+            rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+
+            while (rs.next()) {
+                int isbn = rs.getInt("isbn");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String editor = rs.getString("editorial");
+                int paginas = rs.getInt("paginas");
+                int copias = rs.getInt("copias");
+                precio = precio * copias;
+                libro = new Libro(isbn, titulo, autor, editor, paginas, copias, precio);
+
+                String updateSql = "UPDATE libros SET titulo=?, autor=?, editorial=?, paginas=?, copias=?, precio=? where isbn = ?";
+                pstmt = con.prepareStatement(updateSql);
+                pstmt.setString(1, libro.getTitulo());
+                pstmt.setString(2, libro.getAutor());
+                pstmt.setString(3, libro.getEditorial());
+                pstmt.setInt(4, libro.getPaginas());
+                pstmt.setInt(5, libro.getCopias());
+                pstmt.setDouble(6, libro.getPrecio());
+                pstmt.setInt(7, libro.getISBN());
+                pstmt.executeUpdate();
+                System.out.println("Libro actualizado correctamente");
+
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        liberar();
+
+    }
+
+    private void actualizarPrecioUpdateSQL(Libro libro) {
+        String updateSql = "UPDATE libros SET titulo=?, autor=?, editorial=?, paginas=?, copias=?, precio=? where isbn = ?";
+        try {
+
+            pstmt = con.prepareStatement(updateSql);
+            pstmt.setString(1, libro.getTitulo());
+            pstmt.setString(2, libro.getAutor());
+            pstmt.setString(3, libro.getEditorial());
+            pstmt.setInt(4, libro.getPaginas());
+            pstmt.setInt(5, libro.getCopias());
+            pstmt.setDouble(6, libro.getPrecio());
+            pstmt.setInt(7, libro.getISBN());
+            pstmt.executeUpdate();
+            System.out.println("Libro actualizado correctamente");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        liberar();
+
+    }
+
+
 }
 

@@ -3,7 +3,7 @@ package Main;
 import dao.Libros;
 import modelo.AccesoDatosException;
 import modelo.Libro;
-
+import java.util.HashMap;
 import java.util.List;
 import java.sql.SQLException;
 
@@ -28,7 +28,17 @@ public class Main {
             System.out.println("//////////VER CATALOGO POR LISTA");
             libros.verCatalogo(filas);
 
+			libros.obtenerLibro(1325);
+			libros.librosporEditorial("planeta");
+			for (String columna : libros.getCamposLibro()) {
+                System.out.println(columna);
+            }
+            libros.borrar(new Libro(12345,"Sistemas Operativos","Tanembaun","Informatica",156,3,45.23));
+			libros.actualizarPrecio(122);
 
+			for (Libro verCatalogo : libros.verCatalogo()) {
+				System.out.println(verCatalogo.toString());
+			}
 
         } catch (AccesoDatosException e) {
             e.printStackTrace();
