@@ -20,6 +20,14 @@ public class Main {
 			System.out.println("//////////////////////////////VER CATALOGO INVERSO");
 			libros.verCatalogoInverso();
 		} catch (AccesoDatosException e) {
+			Libros libros = new Libros();
+			int[] filas={1,3};
+			for (Libro libro : libros.verCatalogo()) {
+				System.out.println(libro);
+			}
+			System.out.println("//////////VER CATALOGO POR LISTA");
+			libros.verCatalogo(filas);
+			} catch (AccesoDatosException e) {
 			e.printStackTrace();
 		}
 	}

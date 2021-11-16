@@ -131,7 +131,6 @@ public class Libros {
      */
 
     public List<Libro> verCatalogo() throws AccesoDatosException {
-        String sqlSentence = "SELECT * FROM libros;";
         ArrayList<Libro> list = new ArrayList<Libro>();
         try {
             stmt = con.createStatement();
@@ -393,6 +392,28 @@ public class Libros {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    public void verCatalogo(int[] filas) throws AccesoDatosException{
+        ArrayList<Libro> list = new ArrayList<>();
+        try {
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            rs = stmt.executeQuery(MOSTRAR_LIBROS);
+            while (rs.next()) {
+                int isbn = rs.getInt("isbn");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String editorial = rs.getString("editorial");
+                int paginas = rs.getInt("paginas");
+                int copias = rs.getInt("copias");
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias));
+            }
+            for (int fila : filas) {
+                System.out.println(list.get(fila-1).toString());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        liberar();
     }
 }
 
