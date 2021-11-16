@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 
@@ -42,7 +43,8 @@ public class Libros {
     private static final String SELECT_LIBROS_QUERY = "SELECT * FROM libros;";
     private static final String SEARCH_LIBROS_EDITORIAL = "select * from libros WHERE libros.editorial= ?";
     private static final String MOSTRAR_LIBROS = "SELECT * FROM libros;";
-    private static final String BUSCAR_CAFE="select * from libros WHERE libros.isbn= ?";
+    private static final String BUSCAR_CAFE = "select * from libros WHERE libros.isbn= ?";
+    private static final String UPDATE_LIBROS_ISBN = "UPDATE libros set libros.copias = ? where libros.ISBN= ?";
 
     // Consultas a realizar en BD
 
@@ -158,13 +160,44 @@ public class Libros {
 
     }
 
+
+    public void actualizarCopias(HashMap<Integer, Integer> copias) throws AccesoDatosException {
+        try {
+
+            stmt = con.createStatement();
+            rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+
+            if (rs.next())
+                if (copias.containsKey(rs.getInt(1)))
+                    copias.put(rs.getInt(1), (copias.get(rs.getInt(1)) + rs.getInt(6)));
+
+            pstmt = con.prepareStatement(UPDATE_LIBROS_ISBN);
+            for (Integer isbn : copias.keySet()) {
+                if (copias.containsKey(isbn)) {
+                    pstmt.setInt(1, copias.get(isbn));
+                    pstmt.setInt(2, isbn);
+                    pstmt.execute();
+                }
+            }
+
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
+        } finally {
+
+            liberar();
+
+        }
+    }
+
     /**
      * Actualiza el numero de copias para un libro
      *
      * @param libro
      * @throws AccesoDatosException
      */
-
     public void actualizarCopias(Libro libro) throws AccesoDatosException {
         String updateSql = "UPDATE libros SET titulo=?, autor=?, editorial=?, paginas=?, copias=?, precio=? where isbn = ?";
         try {
@@ -373,45 +406,47 @@ public class Libros {
         }
 
     }
-    public void actualizaPrecio(int isbn1, int isbn2, float precio) throws AccesoDatosException{
-        int paginas1,paginas2;
+
+    public void actualizaPrecio(int isbn1, int isbn2, float precio) throws AccesoDatosException {
+        int paginas1, paginas2;
         try {
             con.setAutoCommit(false);
-            pstmt=con.prepareStatement(BUSCAR_CAFE,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1,isbn1);
-            rs=pstmt.executeQuery();
-            while (rs.next()){
-                paginas1=rs.getInt("paginas");
-                paginas1= (int) (paginas1*precio);
+            pstmt = con.prepareStatement(BUSCAR_CAFE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, isbn1);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                paginas1 = rs.getInt("paginas");
+                paginas1 = (int) (paginas1 * precio);
                 rs.updateInt("paginas", paginas1);
                 rs.updateRow();
-                System.out.println("Precio del libro '"+isbn1+"': "+paginas1);
+                System.out.println("Precio del libro '" + isbn1 + "': " + paginas1);
             }
-            pstmt=null;
-            rs=null;
-            pstmt=con.prepareStatement(BUSCAR_CAFE,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1,isbn2);
-            rs=pstmt.executeQuery();
-            while (rs.next()){
-                paginas2=rs.getInt("paginas");
-                paginas2= (int) (paginas2*precio);
-                rs.updateInt("paginas",paginas2);
+            pstmt = null;
+            rs = null;
+            pstmt = con.prepareStatement(BUSCAR_CAFE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, isbn2);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                paginas2 = rs.getInt("paginas");
+                paginas2 = (int) (paginas2 * precio);
+                rs.updateInt("paginas", paginas2);
                 rs.updateRow();
-                System.out.println("Precio del libro '"+isbn1+"': "+paginas2);
+                System.out.println("Precio del libro '" + isbn1 + "': " + paginas2);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    public void verCatalogoInverso() throws AccesoDatosException{
-        ArrayList<Libro> list=new ArrayList<>();
+
+    public void verCatalogoInverso() throws AccesoDatosException {
+        ArrayList<Libro> list = new ArrayList<>();
         try {
             //Para poder recorrer el ResultSet de manera inversa, deberemos añadirle las siguientes propiedades
-            stmt=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            rs=stmt.executeQuery(MOSTRAR_LIBROS);
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            rs = stmt.executeQuery(MOSTRAR_LIBROS);
             //Necesitamoes utilizar el metodo rs.afterLast() para que no perdamos uno de los registros del ResultSet()
             rs.afterLast();
-            while (rs.previous()){
+            while (rs.previous()) {
                 int isbn = rs.getInt("isbn");
                 String titulo = rs.getString("titulo");
                 String autor = rs.getString("autor");
@@ -419,7 +454,7 @@ public class Libros {
                 int paginas = rs.getInt("paginas");
                 int copias = rs.getInt("copias");
                 float precio = rs.getFloat("precio");
-                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias,precio));
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias, precio));
             }
             //Como nuestro metodo es void, mostraremos por pantalla el resultado dentro del metodo en vez del main
             list.forEach(System.out::println);
@@ -427,10 +462,11 @@ public class Libros {
             e.printStackTrace();
         }
     }
-    public void verCatalogo(int[] filas) throws AccesoDatosException{
+
+    public void verCatalogo(int[] filas) throws AccesoDatosException {
         ArrayList<Libro> list = new ArrayList<>();
         try {
-            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             rs = stmt.executeQuery(MOSTRAR_LIBROS);
             while (rs.next()) {
                 int isbn = rs.getInt("isbn");
@@ -440,10 +476,10 @@ public class Libros {
                 int paginas = rs.getInt("paginas");
                 int copias = rs.getInt("copias");
                 float precio = rs.getFloat("precio");
-                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias,precio));
+                list.add(new Libro(isbn, titulo, autor, editorial, paginas, copias, precio));
             }
             for (int fila : filas) {
-                System.out.println(list.get(fila-1).toString());
+                System.out.println(list.get(fila - 1).toString());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -519,7 +555,7 @@ public class Libros {
             //Deshabilitamos el autocommit
             con.setAutoCommit(false);
 
-            pstmt = con.prepareStatement(sqlSelect,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            pstmt = con.prepareStatement(sqlSelect, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             rs = pstmt.executeQuery();
             //Primero, buscaremos si el libro existe en nuestro catálogo y actulizamos los valores
             while (rs.next()) {
@@ -551,14 +587,14 @@ public class Libros {
         System.out.println("Libro actualizado correctamente ");
     }
 
-    public void copiaLibro(int isbn1, int isbn2) throws AccesoDatosException{
-        Libro libro=new Libro();
+    public void copiaLibro(int isbn1, int isbn2) throws AccesoDatosException {
+        Libro libro = new Libro();
         try {
-            con=new Utilidades().getConnection();
-            pstmt=con.prepareStatement(BUSCAR_CAFE,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1,isbn1);
-            rs=pstmt.executeQuery();
-            while (rs.next()){
+            con = new Utilidades().getConnection();
+            pstmt = con.prepareStatement(BUSCAR_CAFE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, isbn1);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
                 libro.setISBN(rs.getInt("isbn"));
                 libro.setAutor(rs.getString("autor"));
                 libro.setTitulo(rs.getString("titulo"));
@@ -566,15 +602,15 @@ public class Libros {
                 libro.setPaginas(rs.getInt("paginas"));
                 libro.setCopias(rs.getInt("copias"));
             }
-            pstmt=null;
-            rs=null;
-            pstmt=con.prepareStatement(INSERT_LIBRO_QUERY,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1,isbn2);
-            pstmt.setString(2,libro.getTitulo());
-            pstmt.setString(3,libro.getAutor());
-            pstmt.setString(4,libro.getEditorial());
-            pstmt.setInt(5,libro.getPaginas());
-            pstmt.setInt(6,libro.getCopias());
+            pstmt = null;
+            rs = null;
+            pstmt = con.prepareStatement(INSERT_LIBRO_QUERY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, isbn2);
+            pstmt.setString(2, libro.getTitulo());
+            pstmt.setString(3, libro.getAutor());
+            pstmt.setString(4, libro.getEditorial());
+            pstmt.setInt(5, libro.getPaginas());
+            pstmt.setInt(6, libro.getCopias());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
