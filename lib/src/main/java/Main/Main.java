@@ -11,26 +11,9 @@ public class Main {
 
 		try {
 			Libros libros = new Libros();
-			libros.anadirLibro(new Libro(1, "1001 noches", "alibaba", "planeta", 200, 1000000));
-			List lista = libros.verCatalogo();
-			lista.forEach(System.out::println);
-			System.out.println("Libro por editorial");
-			libros.librosporEditorial("planeta");
+			libros.actualizaPrecio(12345,1325,0.25f);
 
-			for (Libro verCatalogo : libros.verCatalogo()) {
-				System.out.println(verCatalogo.toString());
-			}
-
-//			System.out.println(libros.crearTablaLibro());
-
-            libros.obtenerLibro(1325);
-            for (String columna : libros.getCamposLibro()) {
-                System.out.println(columna);
-            }
-            libros.borrar(new Libro(12345,"Sistemas Operativos","Tanembaun","Informatica",156,3));
-
-
-		} catch (AccesoDatosException | SQLException e) {
+		} catch (AccesoDatosException e) {
 			e.printStackTrace();
 		}
 	}
