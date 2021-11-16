@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 
@@ -552,5 +551,36 @@ public class Libros {
         System.out.println("Libro actualizado correctamente ");
     }
 
+    public void copiaLibro(int isbn1, int isbn2) throws AccesoDatosException{
+        Libro libro=new Libro();
+        try {
+            con=new Utilidades().getConnection();
+            pstmt=con.prepareStatement(BUSCAR_CAFE,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1,isbn1);
+            rs=pstmt.executeQuery();
+            while (rs.next()){
+                libro.setISBN(rs.getInt("isbn"));
+                libro.setAutor(rs.getString("autor"));
+                libro.setTitulo(rs.getString("titulo"));
+                libro.setEditorial(rs.getString("editorial"));
+                libro.setPaginas(rs.getInt("paginas"));
+                libro.setCopias(rs.getInt("copias"));
+            }
+            pstmt=null;
+            rs=null;
+            pstmt=con.prepareStatement(INSERT_LIBRO_QUERY,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1,isbn2);
+            pstmt.setString(2,libro.getTitulo());
+            pstmt.setString(3,libro.getAutor());
+            pstmt.setString(4,libro.getEditorial());
+            pstmt.setInt(5,libro.getPaginas());
+            pstmt.setInt(6,libro.getCopias());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
