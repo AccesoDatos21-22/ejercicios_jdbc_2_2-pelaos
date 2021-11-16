@@ -3,7 +3,6 @@ package Main;
 import dao.Libros;
 import modelo.AccesoDatosException;
 import modelo.Libro;
-import java.util.HashMap;
 import java.util.List;
 import java.sql.SQLException;
 
@@ -36,6 +35,7 @@ public class Main {
             libros.borrar(new Libro(12345,"Sistemas Operativos","Tanembaun","Informatica",156,3,45.23));
 			libros.actualizarPrecio(122);
 
+			libros.actualizaPrecio(1, 233.2f, 34);
 			for (Libro verCatalogo : libros.verCatalogo()) {
 				System.out.println(verCatalogo.toString());
 			}
