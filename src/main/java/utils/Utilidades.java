@@ -33,8 +33,8 @@ public class Utilidades {
 	private int portNumber;
 	private Properties prop;
 
-    private static final String PROPERTIES_FILE = System.getProperty("user.dir") + "/lib/src/main/resources/db-properties/h2-properties.xml";
-    private static final String MARIA_PROPERTIES_FILE = System.getProperty("user.dir") + "/lib/src/main/resources/db-properties/mariadb-properties.xml";
+    private static final String PROPERTIES_FILE = System.getProperty("user.dir") + "/src/main/resources/db-properties/h2-properties.xml";
+    private static final String MARIA_PROPERTIES_FILE = System.getProperty("user.dir") + "/src/main/resources/db-properties/mariadb-properties.xml";
 
     public Utilidades() throws FileNotFoundException, IOException, InvalidPropertiesFormatException {
         super();

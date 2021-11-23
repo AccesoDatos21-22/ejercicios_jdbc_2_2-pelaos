@@ -61,7 +61,7 @@ public class Libros {
      */
 
     public Libros() throws AccesoDatosException {
-        String fileSQL = "lib/src/main/resources/libros.sql";
+        String fileSQL = "src/main/resources/libros.sql";
         try {
             // Obtenemos la conexión
             this.con = new Utilidades().getConnection();
